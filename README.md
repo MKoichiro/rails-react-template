@@ -60,7 +60,7 @@ Then, download the Makefile to your workspace:
 cd path/to/your/working/directory/
 ```
 ```bash
-curl -O https://raw.githubusercontent.com/MKoichiro/rails_pg/main/Makefile
+curl -O https://raw.githubusercontent.com/MKoichiro/rails-react-template/main/Makefile
 ```
 
 Next, execute the following command to set up the current directory as the Docker Compose context:

@@ -24,11 +24,11 @@ DB_NAME=api_$(ENVIRONMENT)
 
 # Set up the current directory as the Docker Compose context
 dcom_context:
-	@curl -L -o rails_pg.zip https://github.com/MKoichiro/rails_pg/archive/refs/heads/main.zip
-	@unzip -o -qq rails_pg.zip && rm rails_pg.zip
-	@mv rails_pg-main/* .
-	@rm -rf rails_pg-main/
-	@echo "Open with Visual Studio Code? (yes/no/cursor): "
+	@curl -L -o rails-react-template.zip https://raw.githubusercontent.com/MKoichiro/rails-react-template/archive/refs/heads/main.zip
+	@unzip -o -qq rails-react-template.zip && rm rails-react-template.zip
+	@mv rails-react-template-main/* .
+	@rm -rf rails-react-template-main/
+	@echo "Open with Visual Studio Code (or cursor)? (yes/no/cursor): "
 	@read answer; \
 	if echo "$$answer" | grep -Eq '^(Y|y|YES|yes|Yes|YEs|YeS|yEs|yeS)$$'; then \
 		code .; \
