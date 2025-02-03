@@ -1,0 +1,16 @@
+services:
+  api:
+    build:
+      target: production
+    image: tmp-api-image:latest # Renamed in the api.cicd.yml workflow
+    ports:
+      - "8080:8080"
+    volumes: [] # Not required in production environments
+
+  web:
+    build:
+      target: production
+    image: tmp-web-image:latest # Renamed in the web.cicd.yml workflow
+    ports:
+      - "80:80"
+    volumes: [] # Not required in production environments

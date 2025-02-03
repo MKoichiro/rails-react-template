@@ -1,0 +1,111 @@
+name: API CI/CD Pipeline
+
+on:
+  # Uncomment after verifying functionality
+  # push:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - '.github/workflows/api-cicd.yml'
+  #     - 'infra/aws/task-def/api-td.json'
+  #     - 'api/**'
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: ap-northeast-1
+  ECS_CLUSTER_NAME: testCluster
+  ECS_SERVICE_NAME: pf-api-srv
+  ECS_CONTAINER_NAME: pf-api-container
+  ECR_REPOSITORY_NAME: pf-api-repo
+  ECS_TASK_DEFINITION_PATH: infra/aws/task-def/api-td.json
+  DOCKER_IMAGE_TEMP: tmp-api-image:latest
+  ARTIFACT_NAME: api-image-uri
+  ARTIFACT_FILE: api-image-uri.txt
+
+jobs:
+  # Build
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: api
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Image
+        run: docker compose -f compose.yml -f compose.prod.yml build api
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Push the image to Amazon ECR
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: ${{ env.ECR_REPOSITORY_NAME }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker image tag ${{ env.DOCKER_IMAGE_TEMP }} $REGISTRY/$REPOSITORY:$IMAGE_TAG
+          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+          echo $REGISTRY/$REPOSITORY:$IMAGE_TAG > ${{ env.ARTIFACT_FILE }}
+
+      - name: Upload the image URI file as an artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: api/${{ env.ARTIFACT_FILE }}
+
+  # Deploy
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [build]
+    defaults:
+      run:
+        working-directory: api
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+
+      - name: Download the artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: artifact
+
+      - name: ADD $API_IMAGE_URI to $GITHUB_ENV
+        run: echo "API_IMAGE_URI=$(cat $GITHUB_WORKSPACE/artifact/${{ env.ARTIFACT_FILE }})" >> $GITHUB_ENV
+
+      - name: Render Amazon ECS task definition with new image URI
+        id: render-task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ${{ env.ECS_TASK_DEFINITION_PATH }}
+          container-name: ${{ env.ECS_CONTAINER_NAME }}
+          image: ${{ env.API_IMAGE_URI }}
+
+      - name: Deploy to Amazon ECS service
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.render-task-def.outputs.task-definition }}
+          service: ${{ env.ECS_SERVICE_NAME }}
+          cluster: ${{ env.ECS_CLUSTER_NAME }}
+          wait-for-service-stability: true

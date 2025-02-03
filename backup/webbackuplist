@@ -1,0 +1,10 @@
+./web/docker/Dockerfile
+./web/docker/.dockerignore
+./web/tsconfig.app.json
+./web/tsconfig.json
+./web/tsconfig.node.json
+./web/vite.config.ts
+./web/src/App.tsx
+./web/nginx/conf.d/prev.conf
+./web/nginx/conf.d/prod.conf
+./web/.gitignore

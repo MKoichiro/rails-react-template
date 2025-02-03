@@ -1,0 +1,9 @@
+./api/docker/Dockerfile
+./api/docker/.dockerignore
+./api/bin/docker-entrypoint.dev.sh
+./api/bin/docker-entrypoint
+./api/Gemfile
+./api/Gemfile.lock
+./api/config/environments/production.rb
+./api/config/initializers/cors.rb
+./api/.gitignore

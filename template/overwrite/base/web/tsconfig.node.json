@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    // 差分コンパイルを有効化 tsconfig.*.jsonに変更を加えた場合は、.tsbuildinfoファイルを一度削除した方が良い
+    "incremental": true,
+    // 差分コンパイルのために、コンパイル済みの情報を保存するファイルを指定
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
+    "target": "ES2022",
+    "lib": ["ES2023"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+
+    /* Bundler mode */
+    "moduleResolution": "Bundler",
+    "allowImportingTsExtensions": true,
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true
+  },
+  "include": ["vite.config.ts"]
+}

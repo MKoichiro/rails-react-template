@@ -1,0 +1,16 @@
+services:
+  api:
+    build:
+      target: production
+    image: api-prev:latest
+    ports:
+      - "8080:8080"
+    volumes: [] # ビルド成果だけでいいのでボリュームは剥がす
+
+  web:
+    build:
+      target: preview
+    image: web-prev:latest
+    ports:
+      - "80:80"
+    volumes: [] # ビルド成果だけでいいのでボリュームは剥がす
