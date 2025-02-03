@@ -24,7 +24,7 @@ DB_NAME=api_$(ENVIRONMENT)
 
 # Set up the current directory as the Docker Compose context
 dcom_context:
-	@curl -L -o rails-react-template.zip https://raw.githubusercontent.com/MKoichiro/rails-react-template/archive/refs/heads/main.zip
+	@curl -L -o rails-react-template.zip https://github.com/MKoichiro/rails-react-template/archive/refs/heads/main.zip
 	@unzip -o -qq rails-react-template.zip && rm rails-react-template.zip
 	@mv rails-react-template-main/* .
 	@rm -rf rails-react-template-main/
