@@ -25,6 +25,10 @@ DB_NAME=api_$(ENVIRONMENT)
 # Set up the current directory as the Docker Compose context
 dcom_context:
 	@curl -L -o rails-react-template.zip https://github.com/MKoichiro/rails-react-template/archive/refs/heads/main.zip
+	@mkdir -p .github/workflows/
+	@curl -L -o .github/workflows/ https://raw.githubusercontent.com/MKoichiro/rails-react-template/main/.github/workflows/api.cicd.yml
+	@curl -L -o .github/workflows/ https://raw.githubusercontent.com/MKoichiro/rails-react-template/main/.github/workflows/web.cicd.yml
+	@curl -L -O https://raw.githubusercontent.com/MKoichiro/rails-react-template/main/.gitignore
 	@unzip -o -qq rails-react-template.zip && rm rails-react-template.zip
 	@mv rails-react-template-main/* .
 	@rm -rf rails-react-template-main/
@@ -207,6 +211,7 @@ API_TEMPLATE_DIR=./template/overwrite/test_project/api
 SEEDS_TEMPLATE_FILE=$(API_TEMPLATE_DIR)/seeds-template.txt
 CONTROLLER_TEMPLATE_FILE=$(API_TEMPLATE_DIR)/controller-template.txt
 ROUTES_TEMPLATE_FILE=$(API_TEMPLATE_DIR)/routes-template.txt
+PRODUCTION_TEMPLATE_FILE=$(API_TEMPLATE_DIR)/production-rb-template.txt
 MODEL_NAME=User
 PLURL_NAME=Users
 LOWER_PLURL_NAME=$$(echo $(PLURL_NAME) | tr [:upper:] [:lower:])
@@ -229,7 +234,7 @@ api-test-project: db
 	@echo "Edit routes.rb"
 	@cat $(ROUTES_TEMPLATE_FILE) > ./api/config/routes.rb
 	@echo "Edit production.rb"
-	@cat $(ROUTES_TEMPLATE_FILE) > ./api/config/environments/production.rb
+	@cat $(PRODUCTION_TEMPLATE_FILE) > ./api/config/environments/production.rb
 	@echo "...Complete."
 	@echo "Please run 'make up' to start the services. Then, access 'http://localhost:$(API_PORT)/$(API_PATH)' in your browser."
 # - Overwrite ./web/src/App.tsx so that you can check accessiblity to the API, arranging the `Call API` button in DOM
